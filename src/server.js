@@ -7,26 +7,39 @@ let products = productsRaw;
 const app = express();
 app.use(express.json());
 
+function populatedCartArray (cartIds) {
+    return  cartIds.map((id) => products.find((product) => product.id === id));
+}
+
 app.get('/products', (req,res) => {
     res.send(products);
 })
 
 app.get('/cart', (req,res) => {
-    res.json(cartItems);
+    // let cartArray = [];
+    // cartItems.forEach(element => {
+    //     let items = products.filter((product) => product.id === element);
+    //     cartArray.push(items);
+    // });
+
+    // res.json(cartArray);
+    const cartArray = populatedCartArray(cartItems);
+    res.json(cartArray);
 })
 
 app.post('/cart', (req,res) => {
     const productId = req.body.id;
-    const product = products.find((product) => product.id === productId);
-    cartItems.push(product);
-    res.json(cartItems);    
+    cartItems.push(productId);
+    const cartArray = populatedCartArray(cartItems);
+    res.json(cartArray);    
 })
 
 app.delete('/cart/:productId', (req,res) => {
     const productId = req.params.productId;
     console.log(productId);
-    cartItems = cartItems.filter((cartItem) => cartItem.id !== productId);
-    res.json(cartItems);
+    cartItems = cartItems.filter((id) => id !== productId);
+    const cartArray = populatedCartArray(cartItems);
+    res.json(cartArray);
 });
 
 app.get('/products/:productId', (req,res) => {

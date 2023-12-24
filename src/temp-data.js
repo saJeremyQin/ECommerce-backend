@@ -1,17 +1,6 @@
 
 export const cartItems = [
-    {
-        id: '123',
-        name: 'Basil',
-        price: '$26.00',
-        // imageName: basilBottle,
-    },
-    {
-        id: '234',
-        name: 'Lemon',
-        price: '$26.00',
-        // imageName: lemonBottle,
-    }
+  '123','678'
 ];
 
 export const products = [{
