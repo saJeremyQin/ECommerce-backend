@@ -1,5 +1,9 @@
 import express from 'express';
+import { MongoClient } from 'mongodb';
 import { cartItems as cartItemsRaw, products as productsRaw } from './temp-data';
+
+const url = 'mongodb+srv://jeremyqinsa:600186Qd%21%21@cluster0.xm7uvh0.mongodb.net/?retryWrites=true&w=majority'
+const client = new MongoClient(url);
 
 let cartItems = cartItemsRaw;
 let products = productsRaw;
@@ -7,23 +11,31 @@ let products = productsRaw;
 const app = express();
 app.use(express.json());
 
-function populatedCartArray (cartIds) {
-    return  cartIds.map((id) => products.find((product) => product.id === id));
+async function populatedCartArray (cartIds) {
+    await client.connect();
+    const db = client.db('ECommerceApp-db');
+    // console.log(cartIds);
+
+    return Promise.all(cartIds.map((id) => db.collection('products').findOne({id})));
 }
 
-app.get('/products', (req,res) => {
+
+app.get('/products', async (req,res) => {
+    await client.connect();
+    const db = client.db('ECommerceApp-db');
+
+    products = await db.collection('products').find({}).toArray();
     res.send(products);
 })
 
-app.get('/cart', (req,res) => {
-    // let cartArray = [];
-    // cartItems.forEach(element => {
-    //     let items = products.filter((product) => product.id === element);
-    //     cartArray.push(items);
-    // });
+app.get('/users/:userId/cart', async (req,res) => {
 
-    // res.json(cartArray);
-    const cartArray = populatedCartArray(cartItems);
+    await client.connect();
+    const db = client.db('ECommerceApp-db');
+
+    const user = await db.collection('users').findOne({id: req.params.userId});
+    const cartArray = await populatedCartArray(user.cartItems);
+    
     res.json(cartArray);
 })
 
