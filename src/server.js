@@ -1,10 +1,13 @@
 import express from 'express';
+import cors from 'cors';
 import { MongoClient } from 'mongodb';
 
 const url = 'mongodb+srv://jeremyqinsa:600186Qd%21%21@cluster0.xm7uvh0.mongodb.net/?retryWrites=true&w=majority'
 const client = new MongoClient(url);
 
 const app = express();
+app.use(cors());
+
 app.use(express.json());
 
 async function populatedCartArray (cartIds) {
@@ -17,7 +20,7 @@ async function populatedCartArray (cartIds) {
 }
 
 
-app.get('/products', async (req,res) => {
+app.get('/api/products', async (req,res) => {
     await client.connect();
     const db = client.db('ECommerceApp-db');
 
@@ -25,7 +28,7 @@ app.get('/products', async (req,res) => {
     res.send(products);
 })
 
-app.get('/users/:userId/cart', async (req,res) => {
+app.get('/api/users/:userId/cart', async (req,res) => {
     await client.connect();
     const db = client.db('ECommerceApp-db');
 
@@ -36,7 +39,7 @@ app.get('/users/:userId/cart', async (req,res) => {
     res.json(cartArray);
 })
 
-app.get('/products/:productId', async (req,res) => {
+app.get('/api/products/:productId', async (req,res) => {
     await client.connect();
     const db = client.db('ECommerceApp-db');
 
@@ -46,7 +49,7 @@ app.get('/products/:productId', async (req,res) => {
 })
 
 
-app.post('/users/:userId/cart', async (req,res) => {
+app.post('/api/users/:userId/cart', async (req,res) => {
     const userId = req.params.userId;
     const productId = req.body.id;
 
@@ -70,7 +73,7 @@ app.post('/users/:userId/cart', async (req,res) => {
     res.json(cartArray);    
 })
 
-app.delete('/users/:userId/cart/:productId',async (req,res) => {
+app.delete('/api/users/:userId/cart/:productId',async (req,res) => {
     const userId = req.params.userId;
     const productId = req.params.productId;
     
